@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/samples/" Id="ddb4ef12-cc4e-5e88-e6fc-71a802f4de97">
+    <Project Path="samples/SampleGenerator/SampleGenerator.csproj" Id="8718be9b-08d5-474c-9064-bc8c2ab65611" />
+    <Project Path="samples/SampleGeneratorClient/SampleGeneratorClient.csproj" Id="14c27e41-80ef-459b-ad4d-a20d4d26faad" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/CompilerToolkit.Generators/CompilerToolkit.Generators.csproj" Id="4cc1b898-a2ac-4ce8-9c27-2bacd00e8d35" />
+  </Folder>
+</Solution>

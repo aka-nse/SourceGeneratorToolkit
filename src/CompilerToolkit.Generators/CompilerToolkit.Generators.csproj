@@ -1,0 +1,71 @@
+﻿<Project>
+
+    <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+    <PropertyGroup>
+        <!-- target -->
+        <TargetFramework>netstandard2.0</TargetFramework>
+
+        <!-- languages -->
+        <LangVersion>12</LangVersion>
+        <ImplicitUsings>disable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+
+        <!-- source generator configs -->
+        <IsRoslynComponent>true</IsRoslynComponent>
+        <AnalyzerLanguage>cs</AnalyzerLanguage>
+
+        <PackageId>akanse.$(AssemblyName)</PackageId>
+        <Title>CompilerToolkit</Title>
+        <Version>0.0.1.0</Version>
+        <Authors>aka-nse</Authors>
+        <Company />
+        <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <!-- <RepositoryUrl>https://github.com/aka-nse/CompilerToolkit</RepositoryUrl> -->
+        <!-- <PackageProjectUrl>https://github.com/aka-nse/CompilerToolkit</PackageProjectUrl> -->
+
+
+        <!-- NuGet configs -->
+        <IsPackable>true</IsPackable>
+        <IncludeBuildOutput>false</IncludeBuildOutput>
+        <ContentTargetFolders>contentFiles</ContentTargetFolders>
+        <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+        <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+        <NoWarn>CS8021</NoWarn>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <NoBuild>true</NoBuild>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="SourceBuilder.cs">
+            <Pack>true</Pack>
+            <PackagePath>$(ContentTargetFolders)\cs\netstandard2.0\$(PackageId)\</PackagePath>
+        </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="$(ProjectDir)..\..\LICENSE.txt">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
+        </None>
+      <None Include="$(ProjectDir)..\..\README.md">
+        <Pack>True</Pack>
+        <PackagePath>\</PackagePath>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.3.1" />
+    </ItemGroup>
+
+    <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+    <Target Name="Compile" />
+    <Target Name="CopyFilesToOutputDirectory" />
+
+</Project>
