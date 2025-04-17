@@ -1,15 +1,13 @@
-﻿<Project>
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
     <PropertyGroup>
         <!-- target -->
         <TargetFramework>netstandard2.0</TargetFramework>
 
         <!-- languages -->
         <LangVersion>12</LangVersion>
-        <ImplicitUsings>disable</ImplicitUsings>
+        <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
 
         <!-- source generator configs -->
         <IsRoslynComponent>true</IsRoslynComponent>
@@ -25,29 +23,7 @@
         <!-- <RepositoryUrl>https://github.com/aka-nse/CompilerToolkit</RepositoryUrl> -->
         <!-- <PackageProjectUrl>https://github.com/aka-nse/CompilerToolkit</PackageProjectUrl> -->
 
-
-        <!-- NuGet configs -->
-        <IsPackable>true</IsPackable>
-        <IncludeBuildOutput>false</IncludeBuildOutput>
-        <ContentTargetFolders>contentFiles</ContentTargetFolders>
-        <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
-        <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
-        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-        <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
-        <NoWarn>CS8021</NoWarn>
     </PropertyGroup>
-
-    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-        <NoBuild>true</NoBuild>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    </PropertyGroup>
-
-    <ItemGroup>
-        <Compile Include="SourceBuilder.cs">
-            <Pack>true</Pack>
-            <PackagePath>$(ContentTargetFolders)\cs\netstandard2.0\$(PackageId)\</PackagePath>
-        </Compile>
-    </ItemGroup>
 
     <ItemGroup>
         <None Include="$(ProjectDir)..\..\LICENSE.txt">
@@ -64,8 +40,11 @@
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.3.1" />
     </ItemGroup>
 
-    <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
-    <Target Name="Compile" />
-    <Target Name="CopyFilesToOutputDirectory" />
+    <ItemGroup>
+        <!--
+        <Compile Update="./resources/**/*.cs" />
+        <None Include="./resources/**/*.cs" />
+        -->
+    </ItemGroup>
 
 </Project>

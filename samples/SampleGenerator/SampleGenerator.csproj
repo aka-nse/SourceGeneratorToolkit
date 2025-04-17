@@ -6,7 +6,7 @@
 
         <!-- languages -->
         <LangVersion>12</LangVersion>
-        <ImplicitUsings>disable</ImplicitUsings>
+        <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
 
         <!-- source generator configs -->
@@ -19,6 +19,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Include="$(ProjectDir)../../src/CompilerToolkit.Generators/SourceBuilder.cs" />
+        <Compile Include="$(ProjectDir)../../src/CompilerToolkit.Generators/resources/SourceBuilder.cs" />
     </ItemGroup>
 </Project>

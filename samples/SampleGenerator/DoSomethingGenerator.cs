@@ -26,18 +26,15 @@ public class DoSomethingGenerator : IIncrementalGenerator
 
     private static void Emit(SourceProductionContext context, GeneratorAttributeSyntaxContext source)
     {
-        if (SourceBuilder.Create(context, source) is not { } builder)
-        {
-            return;
-        }
-        var typeBuilder = builder.CreatePartialType(builder.TypeSymbol);
+        var builder = new SourceBuilder(source);
+        var typeBuilder = builder.CreatePartialType((INamedTypeSymbol)source.TargetSymbol);
         typeBuilder.AddRawMember($$"""
                 public string HelloWorld() => "Hello, World!";
 
             """);
-        var sourceCode = builder.GenerateSource();
+        var sourceCode = builder.Build();
         context.AddSource(
-            $"{nameof(DoSomethingGenerator)}-{builder.TypeSymbol.Name}.g.cs",
+            $"{nameof(DoSomethingGenerator)}-{typeBuilder.TargetType.Name}.g.cs",
             sourceCode);
     }
 
@@ -47,7 +44,7 @@ public class DoSomethingGenerator : IIncrementalGenerator
         using System;
         namespace SampleGeneratorGenerated;
 
-        [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+        // [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
         internal sealed class DoSomethingAttribute : Attribute
         {
         }
