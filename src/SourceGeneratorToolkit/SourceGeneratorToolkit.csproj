@@ -8,13 +8,14 @@
         <LangVersion>12</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 
         <!-- source generator configs -->
         <IsRoslynComponent>true</IsRoslynComponent>
         <AnalyzerLanguage>cs</AnalyzerLanguage>
 
         <PackageId>akanse.$(AssemblyName)</PackageId>
-        <Title>CompilerToolkit</Title>
+        <Title>SourceGeneratorToolkit</Title>
         <Version>0.0.1.0</Version>
         <Authors>aka-nse</Authors>
         <Company />
@@ -41,10 +42,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <!--
-        <Compile Update="./resources/**/*.cs" />
-        <None Include="./resources/**/*.cs" />
-        -->
+        <Compile Remove="obsoletes/**/*.cs" />
+        <None Include="obsoletes/**/*.cs" />
     </ItemGroup>
 
 </Project>

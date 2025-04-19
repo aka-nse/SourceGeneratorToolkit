@@ -4,6 +4,6 @@
     <Project Path="samples/SampleGeneratorClient/SampleGeneratorClient.csproj" Id="14c27e41-80ef-459b-ad4d-a20d4d26faad" />
   </Folder>
   <Folder Name="/src/">
-    <Project Path="src/CompilerToolkit.Generators/CompilerToolkit.Generators.csproj" Id="4cc1b898-a2ac-4ce8-9c27-2bacd00e8d35" />
+    <Project Path="src/SourceGeneratorToolkit/SourceGeneratorToolkit.csproj" />
   </Folder>
 </Solution>
