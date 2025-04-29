@@ -3,6 +3,9 @@ using Microsoft.CodeAnalysis;
 namespace SourceGeneratorToolkit;
 
 
+/// <summary>
+/// Represents a part of code that can be appended to a source builder.
+/// </summary>
 internal abstract class CodePart
 {
     private sealed class LineBreakCodePart : CodePart
@@ -11,6 +14,9 @@ internal abstract class CodePart
             => sourceBuilder.AppendLine();
     }
 
+    /// <summary>
+    /// Gets a line break code part.
+    /// </summary>
     public static CodePart LineBreak { get; } = new LineBreakCodePart();
 
     public abstract void AppendTo(ISourceBuilderState sourceBuilder);
@@ -141,18 +147,7 @@ internal sealed class CaptureIndentedCodePart(IEnumerable<CodePart> codeParts) :
 
 internal static class CodePartExtensions
 {
-    public static CodePart IndentForeach(this IEnumerable<string> codeBlocks)
-    {
-        var list = new List<CodePart>();
-        foreach (var codeBlock in codeBlocks)
-        {
-            SourceStringHandler handled = $"{codeBlock}{CodePart.LineBreak}";
-            list.AddRange(handled.CodeParts);
-        }
-        return new CaptureIndentedCodePart(list);
-    }
-
-    public static CodePart IndentForeach(this IEnumerable<IEnumerable<CodePart>> codeBlocks)
+    private static CodePart IndentForeachCore(this IEnumerable<IEnumerable<CodePart>> codeBlocks)
     {
         var list = new List<CodePart>();
         foreach (var codeBlock in codeBlocks)
@@ -163,14 +158,36 @@ internal static class CodePartExtensions
         return new CaptureIndentedCodePart(list);
     }
 
+    /// <summary>
+    /// Captures the current indent and appends the sequence with the indent.
+    /// </summary>
+    /// <param name="codeBlocks"></param>
+    /// <returns></returns>
+    public static CodePart IndentForeach(this IEnumerable<IEnumerable<CodePart>> codeBlocks)
+        => IndentForeachCore(codeBlocks);
+
+    /// <summary>
+    /// Captures the current indent and appends the sequence with the indent.
+    /// </summary>
+    /// <param name="codeBlocks"></param>
+    /// <returns></returns>
     public static CodePart IndentForeach(this IEnumerable<SourceStringHandler> codeBlocks)
-    {
-        var list = new List<CodePart>();
-        foreach (var codeBlock in codeBlocks)
-        {
-            list.AddRange(codeBlock.CodeParts);
-            list.Add(CodePart.LineBreak);
-        }
-        return new CaptureIndentedCodePart(list);
-    }
+        => IndentForeachCore(codeBlocks.Select(cb => cb.CodeParts));
+
+    /// <summary>
+    /// Captures the current indent and appends the sequence with the indent.
+    /// </summary>
+    /// <param name="codeBlocks"></param>
+    /// <returns></returns>
+    public static CodePart IndentForeach(this IEnumerable<string> codeBlocks)
+        => IndentForeachCore(codeBlocks.Select(cb => ((SourceStringHandler)$"{cb}").CodeParts));
+
+    /// <summary>
+    /// Captures the current indent and appends the sequence with the indent.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="codeBlocks"></param>
+    /// <returns></returns>
+    public static CodePart IndentForeach<T>(this IEnumerable<T> codeBlocks)
+        => IndentForeachCore(codeBlocks.Select(cb => ((SourceStringHandler)$"{cb}").CodeParts));
 }

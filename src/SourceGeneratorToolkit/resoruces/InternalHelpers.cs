@@ -27,5 +27,4 @@ internal static class InternalHelpers
         value.CopyTo(_buffer.AsSpan(0, value.Length));
         sb.Append(_buffer, 0, value.Length);
     }
-
 }

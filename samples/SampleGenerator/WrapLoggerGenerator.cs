@@ -7,6 +7,30 @@ namespace SampleGenerator;
 [Generator(LanguageNames.CSharp)]
 public class WrapLoggerGenerator : IIncrementalGenerator
 {
+    private static readonly string[] _comments = [
+        """
+        /*
+            foo is a 1st metavariable
+                foo
+                foobar
+                foobarbaz
+        */
+        """,
+        """
+        /*
+            bar is a 2nd metavariable
+                bar
+                barbaz
+        */
+        """,
+        """
+        /*
+            baz is a 3rd metavariable
+                baz
+        */
+        """,
+        ];
+
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         context.RegisterPostInitializationOutput(static context =>
@@ -28,20 +52,17 @@ public class WrapLoggerGenerator : IIncrementalGenerator
     {
         context.CancellationToken.ThrowIfCancellationRequested();
         var builder = new SourceBuilder(source);
-        builder.Append($$"""
-            /*
-            hello, world!
-            */
-
-            """);
-
 
         context.CancellationToken.ThrowIfCancellationRequested();
         using (var type = builder.BeginTargetTypeDeclare())
         {
-            builder.Append($$"""
+            builder.AppendLine($$"""
                 public string SayHello()
                     => "Hello, world!";
+
+                """);
+            builder.AppendLine($$"""
+                    {{_comments.IndentForeach()}}
                 """);
         }
 

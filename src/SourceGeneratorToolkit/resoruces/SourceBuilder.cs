@@ -5,6 +5,28 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SourceGeneratorToolkit;
 
+/// <summary>
+/// Provides a source code builder for source generation.<br/>
+/// <c>Append()</c> with interpolated string literal will be optimized to code generation.
+/// Please see <see cref="SourceStringHandler"/>.
+/// </summary>
+/// <example><![CDATA[
+/// public static void Emit(SourceProductionContext context, GeneratorAttributeSyntaxContext source)
+/// {
+///     var builder = new SourceBuilder(source);
+///     using (builder.BeginTargetTypeDeclare())
+///     {
+///         builder.AppendLine($$"""
+///             public static string SayHello()
+///                 => "Hello, " + typeof({{(INamedTypeSymbol)source.TargetSymbol}});
+///             """);
+///     }
+///     context.AddSource(
+///         builder.GetPreferHintName(prefix: "", suffix: ""),
+///         builder.Build()
+///         );
+/// }
+/// ]]></example>
 internal partial class SourceBuilder : ISourceBuilder
 {
     private class State(SourceBuilder owner, StringBuilder initialSourceCode) : ISourceBuilderState
