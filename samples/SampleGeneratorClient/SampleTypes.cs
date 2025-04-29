@@ -20,3 +20,23 @@ namespace NS1
     {
     }
 }
+
+
+namespace NS2
+{
+    namespace NS3
+    {
+        [WrapLogger]
+        public partial class Class1
+        {
+            [WrapLogger]
+            public partial class Class2<T>
+            {
+                [WrapLogger]
+                public partial class Class3
+                {
+                }
+            }
+        }
+    }
+}

@@ -19,6 +19,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\SourceGeneratorToolkit\SourceGeneratorToolkit.csproj" />
+        <ProjectReference Include="..\..\src\SourceGeneratorToolkit\SourceGeneratorToolkit.csproj">
+            <OutputItemType>Analyzer</OutputItemType>
+            <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+        </ProjectReference>
     </ItemGroup>
 </Project>

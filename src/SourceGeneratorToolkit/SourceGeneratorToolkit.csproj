@@ -21,8 +21,8 @@
         <Company />
         <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
         <PackageReadmeFile>README.md</PackageReadmeFile>
-        <!-- <RepositoryUrl>https://github.com/aka-nse/CompilerToolkit</RepositoryUrl> -->
-        <!-- <PackageProjectUrl>https://github.com/aka-nse/CompilerToolkit</PackageProjectUrl> -->
+        <RepositoryUrl>https://github.com/aka-nse/CompilerToolkit</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/aka-nse/CompilerToolkit</PackageProjectUrl>
 
     </PropertyGroup>
 
@@ -31,19 +31,23 @@
             <Pack>True</Pack>
             <PackagePath>\</PackagePath>
         </None>
-      <None Include="$(ProjectDir)..\..\README.md">
-        <Pack>True</Pack>
-        <PackagePath>\</PackagePath>
-      </None>
+        <None Include="$(ProjectDir)..\..\README.md">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
+        </None>
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.3.1" />
     </ItemGroup>
 
+    <ItemGroup Condition="'$(Configuration)'=='Release'">
+        <Compile Remove="resources/**/*.cs" />
+        <Compile Include="resources/FrameworkCompatibilities/**/*.cs" />
+    </ItemGroup>
+    
     <ItemGroup>
-        <Compile Remove="obsoletes/**/*.cs" />
-        <None Include="obsoletes/**/*.cs" />
+        <EmbeddedResource Include="resoruces/**/*.cs" />
     </ItemGroup>
 
 </Project>
