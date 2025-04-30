@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using SampleGeneratorGenerated;
 
 namespace NS1
@@ -11,6 +12,7 @@ namespace NS1
             [WrapLogger]
             public partial class Class3
             {
+                public IReadOnlyList<string> FooBar => [];
             }
         }
     }
