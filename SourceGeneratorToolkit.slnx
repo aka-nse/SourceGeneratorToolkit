@@ -1,4 +1,10 @@
 <Solution>
+  <Folder Name="/etc/" Id="08b0c0aa-c66f-494c-9c49-33bb9f6a164b">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="LICENSE.txt" />
+    <File Path="README.md" />
+  </Folder>
   <Folder Name="/samples/" Id="ddb4ef12-cc4e-5e88-e6fc-71a802f4de97">
     <Project Path="samples/SampleGenerator/SampleGenerator.csproj" Id="8718be9b-08d5-474c-9064-bc8c2ab65611" />
     <Project Path="samples/SampleGeneratorClient/SampleGeneratorClient.csproj" Id="14c27e41-80ef-459b-ad4d-a20d4d26faad" />
