@@ -83,6 +83,9 @@ internal sealed class LiteralCodePart(ReadOnlyMemory<char> literal) : CodePart
 {
     public override void AppendTo(ISourceBuilderState sourceBuilder)
         => AppendMultilinesTo(sourceBuilder, literal.Span);
+
+    public override string ToString()
+        => $"Literal(\"{literal.ToString()}\")";
 }
 
 
@@ -93,6 +96,9 @@ internal sealed class TypeSymbolCodePart(INamedTypeSymbol type, int? alignment =
         var name = sourceBuilder.GetDisplayName(type);
         AppendWithAlignmentTo(sourceBuilder, name.AsSpan(), alignment);
     }
+
+    public override string ToString()
+        => $"TypeSymbol(\"{type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)}\")";
 }
 
 
@@ -111,6 +117,9 @@ internal sealed class FormattedCodePart<T>(T value, int? alignment = null, strin
         }
         AppendWithAlignmentTo(sourceBuilder, formattedValue.AsSpan(), alignment);
     }
+
+    public override string ToString()
+        => $"Formatted(\"{value}\")";
 }
 
 
@@ -125,6 +134,9 @@ internal sealed class IndentedCodePart(string indent, IEnumerable<CodePart> code
         }
         sourceBuilder.PopIndent();
     }
+
+    public override string ToString()
+        => $"Indent(constant \"{indent}\")";
 }
 
 
@@ -142,18 +154,26 @@ internal sealed class CaptureIndentedCodePart(IEnumerable<CodePart> codeParts) :
         }
         sourceBuilder.PopIndent();
     }
+
+    public override string ToString()
+        => $"Indent(capture)";
 }
 
 
 internal static class CodePartExtensions
 {
-    private static CodePart IndentForeachCore(this IEnumerable<IEnumerable<CodePart>> codeBlocks)
+    private static CodePart PreserveIndentCore(this IEnumerable<IEnumerable<CodePart>> codeBlocks)
     {
         var list = new List<CodePart>();
-        foreach (var codeBlock in codeBlocks)
+        var iter = codeBlocks.GetEnumerator();
+        if(iter.MoveNext())
         {
-            list.AddRange(codeBlock);
-            list.Add(CodePart.LineBreak);
+            list.AddRange(iter.Current);
+            while(iter.MoveNext())
+            {
+                list.Add(CodePart.LineBreak);
+                list.AddRange(iter.Current);
+            }
         }
         return new CaptureIndentedCodePart(list);
     }
@@ -163,24 +183,32 @@ internal static class CodePartExtensions
     /// </summary>
     /// <param name="codeBlocks"></param>
     /// <returns></returns>
-    public static CodePart IndentForeach(this IEnumerable<IEnumerable<CodePart>> codeBlocks)
-        => IndentForeachCore(codeBlocks);
+    public static CodePart PreserveIndent(this SourceStringHandler codeBlocks)
+        => new CaptureIndentedCodePart(codeBlocks.CodeParts);
 
     /// <summary>
     /// Captures the current indent and appends the sequence with the indent.
     /// </summary>
     /// <param name="codeBlocks"></param>
     /// <returns></returns>
-    public static CodePart IndentForeach(this IEnumerable<SourceStringHandler> codeBlocks)
-        => IndentForeachCore(codeBlocks.Select(cb => cb.CodeParts));
+    public static CodePart PreserveIndent(this IEnumerable<IEnumerable<CodePart>> codeBlocks)
+        => PreserveIndentCore(codeBlocks);
 
     /// <summary>
     /// Captures the current indent and appends the sequence with the indent.
     /// </summary>
     /// <param name="codeBlocks"></param>
     /// <returns></returns>
-    public static CodePart IndentForeach(this IEnumerable<string> codeBlocks)
-        => IndentForeachCore(codeBlocks.Select(cb => ((SourceStringHandler)$"{cb}").CodeParts));
+    public static CodePart PreserveIndent(this IEnumerable<SourceStringHandler> codeBlocks)
+        => PreserveIndentCore(codeBlocks.Select(cb => cb.CodeParts));
+
+    /// <summary>
+    /// Captures the current indent and appends the sequence with the indent.
+    /// </summary>
+    /// <param name="codeBlocks"></param>
+    /// <returns></returns>
+    public static CodePart PreserveIndent(this IEnumerable<string> codeBlocks)
+        => PreserveIndentCore(codeBlocks.Select(cb => ((SourceStringHandler)$"{cb}").CodeParts));
 
     /// <summary>
     /// Captures the current indent and appends the sequence with the indent.
@@ -188,6 +216,6 @@ internal static class CodePartExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="codeBlocks"></param>
     /// <returns></returns>
-    public static CodePart IndentForeach<T>(this IEnumerable<T> codeBlocks)
-        => IndentForeachCore(codeBlocks.Select(cb => ((SourceStringHandler)$"{cb}").CodeParts));
+    public static CodePart PreserveIndent<T>(this IEnumerable<T> codeBlocks)
+        => PreserveIndentCore(codeBlocks.Select(cb => ((SourceStringHandler)$"{cb}").CodeParts));
 }

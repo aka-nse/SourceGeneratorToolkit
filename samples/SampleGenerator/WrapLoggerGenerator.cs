@@ -98,7 +98,7 @@ public class WrapLoggerGenerator : IIncrementalGenerator
 
                 """);
             builder.AppendLine($$"""
-                    {{_comments.IndentForeach()}}
+                    {{_comments.PreserveIndent()}}
                 """);
         }
 

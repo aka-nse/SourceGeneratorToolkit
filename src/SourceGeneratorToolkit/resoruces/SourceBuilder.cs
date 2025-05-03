@@ -38,6 +38,16 @@ internal partial class SourceBuilder : ISourceBuilder
 
         public IFormatProvider FormatProvider => owner.FormatProvider;
 
+        private void PushSuspendedCode()
+        {
+            if (_suspendedCode.Length > 0)
+            {
+                _sourceCode.Append(_currentIndent);
+                _sourceCode.Append(_suspendedCode);
+                _suspendedCode.Clear();
+            }
+        }
+
         public void Append(ReadOnlySpan<char> value)
         {
             _suspendedCode.Append(value);
@@ -60,17 +70,8 @@ internal partial class SourceBuilder : ISourceBuilder
 
         public void AppendLine()
         {
-            if (_suspendedCode.Length > 0)
-            {
-                _sourceCode.Append(_currentIndent);
-                _sourceCode.Append(_suspendedCode);
-                _sourceCode.AppendLine();
-                _suspendedCode.Clear();
-            }
-            else
-            {
-                _sourceCode.AppendLine();
-            }
+            PushSuspendedCode();
+            _sourceCode.AppendLine();
         }
 
         public string GetDisplayName(INamedTypeSymbol symbol)
@@ -87,6 +88,7 @@ internal partial class SourceBuilder : ISourceBuilder
 
         public void PopIndent()
         {
+            PushSuspendedCode();
             _indentStack.Pop();
             _currentIndent = string.Concat(_indentStack);
         }
