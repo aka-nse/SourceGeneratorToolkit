@@ -178,12 +178,19 @@ internal partial class SourceBuilder : ISourceBuilder
 
     public string GetPreferHintName(string? prefix = null, string? suffix = null)
     {
-        static void writeType(StringBuilder sb, INamedTypeSymbol type)
+        static void writeType(StringBuilder sb, ITypeSymbol type)
         {
-            sb.Append(type.Name);
-            if (type.TypeArguments.Length > 0)
+            if (type is INamedTypeSymbol namedType)
             {
-                sb.Append($"`{type.TypeArguments.Length}");
+                sb.Append(namedType.Name);
+                if (namedType.TypeArguments.Length > 0)
+                {
+                    sb.Append($"`{namedType.TypeArguments.Length}");
+                }
+            }
+            else
+            {
+                sb.Append(type.Name);
             }
         }
 
@@ -198,8 +205,18 @@ internal partial class SourceBuilder : ISourceBuilder
             symbolId.Append('+');
         }
         writeType(symbolId, TargetType);
-
-        TargetType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+        if (Context.TargetSymbol is IMethodSymbol methodSymbol)
+        {
+            symbolId.Append($".{methodSymbol.Name}(");
+            var separator = "";
+            foreach (var param in methodSymbol.Parameters)
+            {
+                symbolId.Append(separator);
+                separator = "-";
+                writeType(symbolId, param.Type);
+            }
+            symbolId.Append(')');
+        }
         return $"{prefix}{symbolId}{suffix}.cs";
     }
 
@@ -259,12 +276,12 @@ internal partial class SourceBuilder : ISourceBuilder
             ? ("<" + string.Join(", ", typeArguments) + ">")
             : "";
         return new CodeScope(
-                _state,
-                $$"""
+            _state,
+            $$"""
             {{keyword}} {{typeName}}{{typeArgumentsDecl}}
             {
             """,
-                $$"""
+            $$"""
             }
             """);
     }
@@ -285,12 +302,12 @@ internal partial class SourceBuilder : ISourceBuilder
         return new CodeScope(
             _state,
             $$"""
-        partial {{keyword}} {{type.Name}}{{typeArguments}}
-        {
-        """,
+            partial {{keyword}} {{type.Name}}{{typeArguments}}
+            {
+            """,
             $$"""
-        }
-        """,
+            }
+            """,
             containing);
     }
 
