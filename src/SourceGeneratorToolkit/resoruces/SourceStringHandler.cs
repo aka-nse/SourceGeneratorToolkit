@@ -17,7 +17,7 @@ namespace SourceGeneratorToolkit;
 ///     </item>
 ///     <item>
 ///         <term>
-///             <see cref="IEnumerable{T}"/> with <see cref="CodePartExtensions.IndentForeach{T}(IEnumerable{T})"/> operator<br/>
+///             <see cref="IEnumerable{T}"/> with <see cref="CodePartExtensions.PreserveIndent{T}(IEnumerable{T})"/> operator<br/>
 ///         </term>
 ///         <description>
 ///             will capture the indentation preceding the current position in the interpolated string,
