@@ -13,10 +13,16 @@
         <!-- source generator configs -->
         <IsRoslynComponent>true</IsRoslynComponent>
         <AnalyzerLanguage>cs</AnalyzerLanguage>
+        <IncludeBuildOutput>false</IncludeBuildOutput>
+        <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+        <IncludeSymbols>false</IncludeSymbols>
+        <DevelopmentDependency>true</DevelopmentDependency>
+        <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
 
+        <!-- package configs -->
         <PackageId>akanse.$(AssemblyName)</PackageId>
         <Title>SourceGeneratorToolkit</Title>
-        <Version>0.1.0.0</Version>
+        <Version>0.1.0.1</Version>
         <Authors>aka-nse</Authors>
         <Company />
         <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
@@ -27,27 +33,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="$(ProjectDir)..\..\LICENSE.txt">
-            <Pack>True</Pack>
-            <PackagePath>\</PackagePath>
-        </None>
-        <None Include="$(ProjectDir)..\..\README.md">
-            <Pack>True</Pack>
-            <PackagePath>\</PackagePath>
-        </None>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" />
     </ItemGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.3.1" />
-    </ItemGroup>
-
-    <ItemGroup Condition="'$(Configuration)'=='Release'">
-        <Compile Remove="resources/**/*.cs" />
-        <Compile Include="resources/FrameworkCompatibilities/**/*.cs" />
-    </ItemGroup>
-    
     <ItemGroup>
         <EmbeddedResource Include="resoruces/**/*.cs" />
+        <Compile Remove="resources/**/*.cs" />
+        <Compile Include="resources/FrameworkCompatibilities/**/*.cs" />
+        <None Include="$(ProjectDir)../../LICENSE.txt" Pack="true" PackagePath="/" />
+        <None Include="$(ProjectDir)../../README.md" Pack="true" PackagePath="/" />
+        <None Include="$(OutputPath)/$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
     </ItemGroup>
 
 </Project>
