@@ -22,7 +22,7 @@ internal class Generator : IIncrementalGenerator
             var resourceNames = assm.GetManifestResourceNames();
             foreach (var resourceName in resourceNames)
             {
-                if (resourceName.StartsWith("SourceGeneratorToolkit.resoruces.FrameworkCompatibilities."))
+                if (resourceName.StartsWith("SourceGeneratorToolkit.resources.FrameworkCompatibilities."))
                 {
                     continue;
                 }
@@ -35,11 +35,11 @@ internal class Generator : IIncrementalGenerator
 
         new CompatibilityType(
             "System.Runtime.CompilerServices.InterpolatedStringHandlerAttribute",
-            "SourceGeneratorToolkit.resoruces.FrameworkCompatibilities.InterpolatedStringHandlerAttribute.cs")
+            "SourceGeneratorToolkit.resources.FrameworkCompatibilities.InterpolatedStringHandlerAttribute.cs")
             .Register(context);
         new CompatibilityType(
             "System.Runtime.CompilerServices.IsExternalInit",
-            "SourceGeneratorToolkit.resoruces.FrameworkCompatibilities.IsExternalInit.cs")
+            "SourceGeneratorToolkit.resources.FrameworkCompatibilities.IsExternalInit.cs")
             .Register(context);
     }
 }

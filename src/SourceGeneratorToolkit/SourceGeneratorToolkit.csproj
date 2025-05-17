@@ -37,7 +37,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="resoruces/**/*.cs" />
+        <EmbeddedResource Include="resources/**/*.cs" />
         <Compile Remove="resources/**/*.cs" />
         <Compile Include="resources/FrameworkCompatibilities/**/*.cs" />
         <None Include="$(ProjectDir)../../LICENSE.txt" Pack="true" PackagePath="/" />
