@@ -22,7 +22,7 @@
         <!-- package configs -->
         <PackageId>akanse.$(AssemblyName)</PackageId>
         <Title>SourceGeneratorToolkit</Title>
-        <Version>0.1.0.1</Version>
+        <Version>0.1.1.0</Version>
         <Authors>aka-nse</Authors>
         <Company />
         <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
@@ -37,7 +37,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="resoruces/**/*.cs" />
+        <EmbeddedResource Include="resources/**/*.cs" />
         <Compile Remove="resources/**/*.cs" />
         <Compile Include="resources/FrameworkCompatibilities/**/*.cs" />
         <None Include="$(ProjectDir)../../LICENSE.txt" Pack="true" PackagePath="/" />

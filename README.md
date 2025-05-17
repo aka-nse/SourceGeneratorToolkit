@@ -13,6 +13,7 @@ Useful tools for generating code in C# and other languages.
 ### Classes  
 
 - **`SourceBuilder`**: Formatted source code generator
+- **`SourceBuilderSlim`**: Formatted bare text source code generator
 - **`CodePart`**: Represents a part of the source code
 - **`SourceStringHandler`**: String interpolation handler for source code generation
 
