@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 namespace SourceGeneratorToolkit;
 
 internal static class SourceBuilderExtensions

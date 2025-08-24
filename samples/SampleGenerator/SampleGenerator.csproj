@@ -6,7 +6,7 @@
 
         <!-- languages -->
         <LangVersion>12</LangVersion>
-        <ImplicitUsings>enable</ImplicitUsings>
+        <ImplicitUsings>false</ImplicitUsings>
         <Nullable>enable</Nullable>
 
         <!-- source generator configs -->

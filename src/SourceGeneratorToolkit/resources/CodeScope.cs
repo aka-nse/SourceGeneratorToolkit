@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace SourceGeneratorToolkit;
 
 internal class CodeScope : IDisposable
