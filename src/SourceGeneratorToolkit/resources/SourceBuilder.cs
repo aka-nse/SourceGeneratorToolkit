@@ -190,7 +190,7 @@ internal partial class SourceBuilder : ISourceBuilder
     }
 
 
-    public string GetPreferHintName(string? prefix = null, string? suffix = null)
+    public string GetPreferHintName(string? prefix = null, string? suffix = ".g")
     {
         static void writeType(StringBuilder sb, ITypeSymbol type)
         {
