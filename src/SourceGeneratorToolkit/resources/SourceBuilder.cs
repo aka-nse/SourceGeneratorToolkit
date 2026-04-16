@@ -276,8 +276,8 @@ internal partial class SourceBuilder : ISourceBuilder
         _state.AppendLine();
     }
 
-    public IDisposable BeginTargetTypeDeclare()
-        => GetPartialTypeDecl(TargetType);
+    public IDisposable BeginTargetTypeDeclare(params SourceStringHandler[] attributeDeclarations)
+        => GetPartialTypeDecl(TargetType, attributeDeclarations);
 
     public IDisposable BeginFileOnlyTypeDeclare(
         string typeName,
@@ -304,18 +304,19 @@ internal partial class SourceBuilder : ISourceBuilder
         => _state.ToString();
 
 
-    private CodeScope GetPartialTypeDecl(INamedTypeSymbol type)
+    private CodeScope GetPartialTypeDecl(INamedTypeSymbol type, SourceStringHandler[] attributeDeclarations)
     {
         var keyword = GetKeyword(type.TypeKind, type.IsRecord);
         var typeArguments = type.TypeArguments.Length > 0
             ? ("<" + string.Join(", ", type.TypeArguments.Select(ta => ta.Name)) + ">")
             : "";
         var containing = type.ContainingType is { }
-            ? GetPartialTypeDecl(type.ContainingType)
+            ? GetPartialTypeDecl(type.ContainingType, Array.Empty<SourceStringHandler>())
             : null;
         return new CodeScope(
             _state,
             $$"""
+            {{attributeDeclarations.Select(static x => (SourceStringHandler)$"[{x}]").PreserveIndent()}}
             partial {{keyword}} {{type.Name}}{{typeArguments}}
             {
             """,
