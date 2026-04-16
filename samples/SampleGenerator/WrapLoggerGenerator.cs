@@ -72,7 +72,7 @@ public class WrapLoggerGenerator : IIncrementalGenerator
             """);
 
         context.CancellationToken.ThrowIfCancellationRequested();
-        using (var type = builder.BeginTargetTypeDeclare())
+        using (var type = builder.BeginTargetTypeDeclare($"System.ComponentModel.Browsable(true)"))
         {
             builder.AppendLine($$"""
                 public string SayHello(string someone)
