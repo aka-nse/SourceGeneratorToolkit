@@ -17,6 +17,8 @@ internal class SourceBuilderSlim : ISourceBuilder
 
         public IFormatProvider FormatProvider => owner.FormatProvider;
 
+        public int IndentLevel => _indentStack.Count;
+
         private void PushSuspendedCode()
         {
             if (_suspendedCode.Length > 0)
@@ -77,13 +79,12 @@ internal class SourceBuilderSlim : ISourceBuilder
     }
 
 
-    private readonly State _state;
+    private readonly List<CodePart> _codeParts = [];
 
     public IFormatProvider FormatProvider { get; }
 
     public SourceBuilderSlim(IFormatProvider? formatProvider = null)
     {
-        _state = new State(this);
         FormatProvider = formatProvider ?? CultureInfo.InvariantCulture;
     }
 
@@ -91,17 +92,18 @@ internal class SourceBuilderSlim : ISourceBuilder
         => symbol.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
 
     public void Append(CodePart codePart)
-        => codePart.AppendTo(_state);
+        => _codeParts.Add(codePart);
 
-    public void AppendLine()
-        => _state.AppendLine();
-
-    public void PushIndent(string indent)
-        => _state.PushIndent(indent);
-
-    public void PopIndent()
-        => _state.PopIndent();
+    public void Append(IEnumerable<CodePart> codeParts)
+        => _codeParts.AddRange(codeParts);
 
     public string Build()
-        => _state.ToString();
+    {
+        var state = new State(this);
+        foreach (var codePart in _codeParts)
+        {
+            codePart.AppendTo(state);
+        }
+        return state.ToString();
+    }
 }

@@ -11,10 +11,21 @@ namespace SourceGeneratorToolkit;
 /// </summary>
 internal abstract class CodePart
 {
+    private sealed class NoneCodePart : CodePart
+    {
+        public override void AppendTo(ISourceBuilderState state)
+        {
+            // Do nothing
+        }
+    }
+
+    public static CodePart None { get; } = new NoneCodePart();
+
+
     private sealed class LineBreakCodePart : CodePart
     {
-        public override void AppendTo(ISourceBuilderState sourceBuilder)
-            => sourceBuilder.AppendLine();
+        public override void AppendTo(ISourceBuilderState state)
+            => state.AppendLine();
     }
 
     /// <summary>
@@ -22,16 +33,74 @@ internal abstract class CodePart
     /// </summary>
     public static CodePart LineBreak { get; } = new LineBreakCodePart();
 
-    public abstract void AppendTo(ISourceBuilderState sourceBuilder);
 
-    protected static void AppendMultilinesTo(ISourceBuilderState sourceBuilder, ReadOnlySpan<char> span)
+
+    private sealed class WhereCodePart(Func<ISourceBuilderState, bool> condition, CodePart codePart) : CodePart
+    {
+        public override void AppendTo(ISourceBuilderState state)
+        {
+            if(condition(state))
+            {
+                codePart.AppendTo(state);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets a code part that appends the given code part only if the given condition is true.
+    /// </summary>
+    public static CodePart Where(Func<ISourceBuilderState, bool> condition, CodePart codePart) =>
+        new WhereCodePart(condition, codePart);
+
+
+    private sealed class FlushCodePart : CodePart
+    {
+        public override void AppendTo(ISourceBuilderState state)
+        {
+            if (state.GetSuspendedCode().Length > 0)
+            {
+                state.AppendLine();
+            }
+        }
+    }
+
+    public static CodePart Flush { get; } = new FlushCodePart();
+
+
+    private sealed class PushIndentCodePart(string indent) : CodePart
+    {
+        public override void AppendTo(ISourceBuilderState state) =>
+            state.PushIndent(indent);
+    }
+
+    public static CodePart PushIndent(string indent = "    ") => new PushIndentCodePart(indent);
+
+
+    private sealed class PopIndentCodePart : CodePart
+    {
+        public override void AppendTo(ISourceBuilderState state) =>
+            state.PopIndent();
+    }
+
+    public static CodePart PopIndent() => new PopIndentCodePart();
+
+
+    public static CodePart Literal(ReadOnlyMemory<char> literal) =>
+        new LiteralCodePart(literal);
+
+    public static CodePart Literal(string literal) =>
+        Literal(literal.AsMemory());
+
+    public abstract void AppendTo(ISourceBuilderState state);
+
+    protected static void AppendMultilinesTo(ISourceBuilderState state, ReadOnlySpan<char> span)
     {
         while (span.Length > 0)
         {
             var lf = span.IndexOf('\n');
             if (lf < 0)
             {
-                sourceBuilder.Append(span);
+                state.Append(span);
                 break;
             }
             if (lf == 0 || (lf == 1 && span[0] == '\r'))
@@ -39,18 +108,18 @@ internal abstract class CodePart
             }
             else if (span[lf - 1] == '\r')
             {
-                sourceBuilder.Append(span.Slice(0, lf - 1));
+                state.Append(span.Slice(0, lf - 1));
             }
             else
             {
-                sourceBuilder.Append(span.Slice(0, lf));
+                state.Append(span.Slice(0, lf));
             }
-            sourceBuilder.AppendLine();
+            state.AppendLine();
             span = span.Slice(lf + 1);
         }
     }
 
-    protected static void AppendWithAlignmentTo(ISourceBuilderState sourceBuilder, ReadOnlySpan<char> span, int? alignment)
+    protected static void AppendWithAlignmentTo(ISourceBuilderState state, ReadOnlySpan<char> span, int? alignment)
     {
         var align = alignment ?? 0;
         var leftAlign = false;
@@ -63,19 +132,19 @@ internal abstract class CodePart
         var paddingRequired = align - span.Length;
         if (paddingRequired <= 0)
         {
-            sourceBuilder.Append(span);
+            state.Append(span);
         }
         else
         {
             if (leftAlign)
             {
-                sourceBuilder.Append(span);
-                sourceBuilder.Append(' ', paddingRequired);
+                state.Append(span);
+                state.Append(' ', paddingRequired);
             }
             else
             {
-                sourceBuilder.Append(' ', paddingRequired);
-                sourceBuilder.Append(span);
+                state.Append(' ', paddingRequired);
+                state.Append(span);
             }
         }
     }
@@ -84,8 +153,8 @@ internal abstract class CodePart
 
 internal sealed class LiteralCodePart(ReadOnlyMemory<char> literal) : CodePart
 {
-    public override void AppendTo(ISourceBuilderState sourceBuilder)
-        => AppendMultilinesTo(sourceBuilder, literal.Span);
+    public override void AppendTo(ISourceBuilderState state)
+        => AppendMultilinesTo(state, literal.Span);
 
     public override string ToString()
         => $"Literal(\"{literal.ToString()}\")";
@@ -94,10 +163,10 @@ internal sealed class LiteralCodePart(ReadOnlyMemory<char> literal) : CodePart
 
 internal sealed class TypeSymbolCodePart(INamedTypeSymbol type, int? alignment = null) : CodePart
 {
-    public override void AppendTo(ISourceBuilderState sourceBuilder)
+    public override void AppendTo(ISourceBuilderState state)
     {
-        var name = sourceBuilder.GetDisplayName(type);
-        AppendWithAlignmentTo(sourceBuilder, name.AsSpan(), alignment);
+        var name = state.GetDisplayName(type);
+        AppendWithAlignmentTo(state, name.AsSpan(), alignment);
     }
 
     public override string ToString()
@@ -107,18 +176,18 @@ internal sealed class TypeSymbolCodePart(INamedTypeSymbol type, int? alignment =
 
 internal sealed class FormattedCodePart<T>(T value, int? alignment = null, string? format = null) : CodePart
 {
-    public override void AppendTo(ISourceBuilderState sourceBuilder)
+    public override void AppendTo(ISourceBuilderState state)
     {
         string formattedValue;
         if (value is IFormattable formattable)
         {
-            formattedValue = formattable.ToString(format, sourceBuilder.FormatProvider);
+            formattedValue = formattable.ToString(format, state.FormatProvider);
         }
         else
         {
             formattedValue = value?.ToString() ?? string.Empty;
         }
-        AppendWithAlignmentTo(sourceBuilder, formattedValue.AsSpan(), alignment);
+        AppendWithAlignmentTo(state, formattedValue.AsSpan(), alignment);
     }
 
     public override string ToString()
@@ -126,36 +195,56 @@ internal sealed class FormattedCodePart<T>(T value, int? alignment = null, strin
 }
 
 
-internal sealed class IndentedCodePart(string indent, IEnumerable<CodePart> codeParts) : CodePart
+internal sealed class LazyCodePart(CodePart? firstTimePrefix, CodePart? separator, CodePart? lastTimeSuffix) : CodePart
 {
-    public override void AppendTo(ISourceBuilderState sourceBuilder)
-    {
-        sourceBuilder.PushIndent(indent);
-        foreach (var codePart in codeParts)
-        {
-            codePart.AppendTo(sourceBuilder);
-        }
-        sourceBuilder.PopIndent();
-    }
+    private readonly List<CodePart> _parts = [];
 
-    public override string ToString()
-        => $"Indent(constant \"{indent}\")";
+    public void Add(CodePart part)
+        => _parts.Add(part);
+
+    public void Add(IEnumerable<CodePart> parts)
+        => _parts.AddRange(parts);
+
+    public void Add(SourceStringHandler code)
+        => _parts.AddRange(code.CodeParts);
+
+    public override void AppendTo(ISourceBuilderState state)
+    {
+        if(_parts.Count == 0)
+        {
+            return;
+        }
+
+        separator ??= CodePart.None;
+        var currentSeparator = None;
+        firstTimePrefix?.AppendTo(state);
+        foreach (var part in _parts)
+        {
+            currentSeparator.AppendTo(state);
+            currentSeparator = separator;
+            part.AppendTo(state);
+        }
+        lastTimeSuffix?.AppendTo(state);
+    }
 }
+
+
+
 
 
 internal sealed class CaptureIndentedCodePart(IEnumerable<CodePart> codeParts) : CodePart
 {
-    public override void AppendTo(ISourceBuilderState sourceBuilder)
+    public override void AppendTo(ISourceBuilderState state)
     {
-        var currentLineLeading = sourceBuilder.GetSuspendedCode();
+        var currentLineLeading = state.GetSuspendedCode();
         var indent = currentLineLeading.ToString();
         currentLineLeading.Clear();
-        sourceBuilder.PushIndent(indent);
+        state.PushIndent(indent);
         foreach (var codePart in codeParts)
         {
-            codePart.AppendTo(sourceBuilder);
+            codePart.AppendTo(state);
         }
-        sourceBuilder.PopIndent();
+        state.PopIndent();
     }
 
     public override string ToString()

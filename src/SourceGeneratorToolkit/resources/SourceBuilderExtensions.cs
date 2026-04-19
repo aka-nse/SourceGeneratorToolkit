@@ -5,30 +5,38 @@ namespace SourceGeneratorToolkit;
 internal static class SourceBuilderExtensions
 {
     /// <summary>
-    /// Appends a sequence of <see cref="CodePart"/> to the <see cref="ISourceBuilder"/>.
+    /// Appends a line break;
     /// </summary>
-    /// <param name="builder"></param>
-    /// <param name="codeParts"></param>
-    public static void Append(this ISourceBuilder builder, IEnumerable<CodePart> codeParts)
-    {
-        foreach (var part in codeParts)
-        {
-            builder.Append(part);
-        }
-    }
+    public static void AppendLine(this ISourceBuilder sourceBuilder)
+        => sourceBuilder.Append(CodePart.LineBreak);
+
+    /// <summary>
+    /// Begins a new indented region.
+    /// </summary>
+    /// <param name="indent"></param>
+    public static void PushIndent(this ISourceBuilder sourceBuilder, string indent)
+        => sourceBuilder.Append(CodePart.PushIndent(indent));
+
+    /// <summary>
+    /// Finishes indented region which last entered.
+    /// </summary>
+    public static void PopIndent(this ISourceBuilder sourceBuilder)
+        => sourceBuilder.Append(CodePart.PopIndent());
+
+    /// <summary>
+    /// Flushes the suspended codes with terminal line break.
+    /// </summary>
+    /// <param name="sourceBuilder"></param>
+    public static void Flush(this ISourceBuilder sourceBuilder)
+        => sourceBuilder.Append(CodePart.Flush);
 
     /// <summary>
     /// Appends a formatted string to the <see cref="ISourceBuilder"/>.
     /// </summary>
     /// <param name="builder"></param>
     /// <param name="sourceText"></param>
-    public static void Append(this ISourceBuilder builder, SourceStringHandler sourceText)
-    {
-        foreach (var part in sourceText.CodeParts)
-        {
-            builder.Append(part);
-        }
-    }
+    public static void Append(this ISourceBuilder builder, SourceStringHandler sourceText) =>
+        builder.Append(sourceText.CodeParts);
 
     /// <summary>
     /// Appends a string to the <see cref="ISourceBuilder"/> as a literal.
