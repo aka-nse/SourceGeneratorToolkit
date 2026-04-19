@@ -22,7 +22,7 @@
         <!-- package configs -->
         <PackageId>akanse.$(AssemblyName)</PackageId>
         <Title>SourceGeneratorToolkit</Title>
-        <Version>0.2.0.0</Version>
+        <Version>0.3.0.0</Version>
         <Authors>aka-nse</Authors>
         <Company />
         <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
