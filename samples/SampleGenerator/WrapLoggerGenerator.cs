@@ -72,8 +72,27 @@ public class WrapLoggerGenerator : IIncrementalGenerator
             """);
 
         context.CancellationToken.ThrowIfCancellationRequested();
-        using (var type = builder.BeginTargetTypeDeclare($"System.ComponentModel.Browsable(true)"))
+        using (var type = builder.BeginTargetTypeDeclare())
         {
+            type.AddBaseType("System.IDisposable");
+            type.AddBaseType("System.Collections.Generic.IEnumerable<int>");
+            type.AddAttribute("System.ComponentModel.Browsable(true)");
+            type.AddAttribute("FooBar");
+            builder.AppendLine($$"""
+                public System.Collections.Generic.IEnumerator<int> GetEnumerator()
+                {
+                    yield break;
+                }
+
+                System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() =>
+                    GetEnumerator();
+
+                public void Dispose()
+                {
+                    // Do nothing.
+                }
+
+                """);
             builder.AppendLine($$"""
                 public string SayHello(string someone)
                     => $"Hello, {someone}!";
@@ -97,9 +116,14 @@ public class WrapLoggerGenerator : IIncrementalGenerator
                     {{_comments.PreserveIndent()}}
                 """);
         }
+        using(var type = builder.BeginFileOnlyTypeDeclare("FooBarAttribute"))
+        {
+            type.AddBaseType("System.Attribute");
+            type.AddAttribute("System.AttributeUsage(System.AttributeTargets.Class | System.AttributeTargets.Struct)");
+        }
 
         context.CancellationToken.ThrowIfCancellationRequested();
-        var hintName = builder.GetPreferHintName(prefix: "", suffix: "");
+        var hintName = builder.GetPreferHintName(prefix: "");
         var sourceCode = builder.Build();
         context.AddSource(hintName, sourceCode);
     }

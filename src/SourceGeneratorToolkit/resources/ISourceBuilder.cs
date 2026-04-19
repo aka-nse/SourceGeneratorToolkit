@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace SourceGeneratorToolkit;
 
 /// <summary>
@@ -12,18 +14,8 @@ internal interface ISourceBuilder
     public void Append(CodePart codePart);
 
     /// <summary>
-    /// Appends a line break;
+    /// Appends a smart code part objects to the source builder.
     /// </summary>
-    public void AppendLine();
-
-    /// <summary>
-    /// Begins a new indented region.
-    /// </summary>
-    /// <param name="indent"></param>
-    public void PushIndent(string indent);
-
-    /// <summary>
-    /// Finishes indented region which last entered.
-    /// </summary>
-    public void PopIndent();
+    /// <param name="codeParts"></param>
+    public void Append(IEnumerable<CodePart> codeParts);
 }

@@ -13,6 +13,11 @@ internal interface ISourceBuilderState
     public IFormatProvider FormatProvider { get; }
 
     /// <summary>
+    /// Gets the current indentation level, which is the number of indentations introduced by <see cref="PushIndent(string)"/> calls that have not yet been removed by <see cref="PopIndent"/>.
+    /// </summary>
+    public int IndentLevel { get; }
+
+    /// <summary>
     /// Formats the type symbol into a string which can be used in source code.
     /// </summary>
     /// <param name="symbol"></param>

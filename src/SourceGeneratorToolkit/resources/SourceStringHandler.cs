@@ -59,6 +59,12 @@ internal readonly struct SourceStringHandler(int literalLength, int formattedCou
     {
         switch (value)
         {
+        case CodePart codePart:
+            AppendFormatted(codePart);
+            break;
+        case IEnumerable<CodePart> codeParts:
+            AppendFormatted(codeParts);
+            break;
         case string literal:
             _codeParts.Add(new LiteralCodePart(literal.AsMemory()));
             break;
