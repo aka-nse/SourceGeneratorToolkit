@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace SourceGeneratorToolkit;
 
+/// <summary>
+/// Represents a scope for declaring a type in the generated source code.
+/// </summary>
 internal class TypeDeclarationScope : IDisposable
 {
     private readonly ISourceBuilder _builder;
