@@ -20,3 +20,9 @@ Useful tools for generating code in C# and other languages.
 ## License
 
 Apache License Version 2.0
+
+## Release Notes
+
+### v0.4.0
+
+- Makes standard parameter `usesDefaultHeader` of `SourceBuilder`  to be `false`.
