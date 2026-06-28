@@ -67,15 +67,17 @@ internal class SourceBuilderSlim : ISourceBuilder
             _currentIndent = string.Concat(_indentStack);
         }
 
-        public void PopIndent()
+        public StringBuilder GetStringBuilder()
         {
             PushSuspendedCode();
-            _indentStack.Pop();
-            _currentIndent = string.Concat(_indentStack);
+            return _sourceCode;
         }
 
         public override string ToString()
-            => _sourceCode.ToString() + _suspendedCode.ToString();
+        {
+            PushSuspendedCode();
+            return _sourceCode.ToString();
+        }
     }
 
 
@@ -97,13 +99,16 @@ internal class SourceBuilderSlim : ISourceBuilder
     public void Append(IEnumerable<CodePart> codeParts)
         => _codeParts.AddRange(codeParts);
 
-    public string Build()
+    public StringBuilder BuildStringBuilder()
     {
         var state = new State(this);
         foreach (var codePart in _codeParts)
         {
             codePart.AppendTo(state);
         }
-        return state.ToString();
+        return state.GetStringBuilder();
     }
+
+    public string Build() =>
+        BuildStringBuilder().ToString();
 }

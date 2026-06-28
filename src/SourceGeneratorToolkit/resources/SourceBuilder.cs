@@ -98,8 +98,17 @@ internal partial class SourceBuilder : ISourceBuilder
             _currentIndent = string.Concat(_indentStack);
         }
 
+        public StringBuilder GetStringBuilder()
+        {
+            PushSuspendedCode();
+            return _sourceCode;
+        }
+
         public override string ToString()
-            => _sourceCode.ToString() + _suspendedCode.ToString();
+        {
+            PushSuspendedCode();
+            return _sourceCode.ToString();
+        }
     }
 
     private readonly SemanticModel _semanticModel;
@@ -344,16 +353,18 @@ internal partial class SourceBuilder : ISourceBuilder
             """);
     }
 
-    public string Build()
+    public StringBuilder BuildStringBuilder()
     {
         var state = new State(this);
         foreach (var codePart in _codeParts)
         {
             codePart.AppendTo(state);
         }
-        return state.ToString();
+        return state.GetStringBuilder();
     }
 
+    public string Build() =>
+        BuildStringBuilder().ToString();
 
     private TypeDeclarationScope GetPartialTypeDecl(INamedTypeSymbol type)
     {
